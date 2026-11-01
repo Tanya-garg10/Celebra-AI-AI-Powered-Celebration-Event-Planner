@@ -348,11 +348,13 @@ Return ONLY valid JSON matching this schema:
   }
 
   if (url.includes('/api/ai/chat') && req.method === 'POST') {
-    const { message, eventContext } = req.body;
+    try {
+      const { message, eventContext } = req.body;
+      console.log('Chat request received:', { message: message?.substring(0, 50), hasEventContext: !!eventContext });
 
-    if (aiClient && featherlessVerified) {
-      try {
-        const contextSummary = eventContext ? `
+      if (aiClient && featherlessVerified) {
+        try {
+          const contextSummary = eventContext ? `
 Current Event Active Context:
 |- Name: ${eventContext.name || 'Celebration'}
 |- Type: ${eventContext.eventType || 'Event'}
@@ -363,7 +365,7 @@ Current Event Active Context:
 |- Food: ${eventContext.foodPreference || 'Both'}
 ` : 'No specific event active.';
 
-        const chatPrompt = `You are Celebra AI's Senior Celebration & Event Planner Assistant.
+          const chatPrompt = `You are Celebra AI's Senior Celebration & Event Planner Assistant.
 You give warm, highly practical, creative, and budget-conscious advice for organizing Indian and global celebrations (Weddings, Birthdays, Anniversaries, College Fests, Community Gatherings).
 Always provide actionable suggestions with specific cost estimates, menu items, or scheduling details where appropriate.
 ${contextSummary}
@@ -372,25 +374,128 @@ User question: "${message}"
 
 Answer clearly, formatted with concise bullet points, bold accents, and an encouraging tone. Keep the answer structured and easy to read.`;
 
-        const response = await aiClient.chat.completions.create({
-          model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
-          messages: [{ role: 'user', content: chatPrompt }],
-          temperature: 0.7,
-          max_tokens: 1000
-        });
+          const response = await aiClient.chat.completions.create({
+            model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+            messages: [{ role: 'user', content: chatPrompt }],
+            temperature: 0.7,
+            max_tokens: 1000
+          });
 
-        return res.json({
-          success: true,
-          source: 'featherless',
-          reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
-        });
-      } catch (err: any) {
-        console.error('Featherless chat error:', err);
-        console.error('Error details:', err.message);
-        // Fall through to demo mode
-        featherlessVerified = false;
+          return res.json({
+            success: true,
+            source: 'featherless',
+            reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
+          });
+        } catch (err: any) {
+          console.error('Featherless chat error:', err);
+          console.error('Error details:', err.message);
+          // Fall through to demo mode
+          featherlessVerified = false;
+        }
       }
+
+      const lower = (message || '').toLowerCase();
+      let reply = `Here are curated recommendations from Celebra AI:
+
+• **Budget Focus**: Prioritize high-visibility touchpoints (welcoming entrance, stage lighting, signature food items).
+• **Guest Flow**: Keep formalities under 45 minutes before serving starters to keep energy vibrant.
+• **Personal Touch**: A custom signature drink or personalized welcome note creates an unforgettable impression without extra expense.`;
+
+      if (lower.includes('wedding') || lower.includes('lakh')) {
+        reply = `### How to Plan an Elegant Celebration Under ₹5 Lakh:
+
+1. **Venue Selection (30% ~ ₹1.5L)**: Choose a boutique banquet, lawn club, or boutique farmhouse that permits outside catering or offers all-inclusive bundle discounts on off-peak weekdays or Sunday morning muhurats.
+2. **Catering (40% ~ ₹2.0L for 150 guests)**: Budget ₹1,200 - ₹1,350 per plate. Focus on 4 live chaat/appetizer stations, 2 signature royal curries, artisanal breads, and 2 hot desserts (Gulab Jamun with Rabri & Kulfi).
+3. **Decor & Lighting (15% ~ ₹75,000)**: Use vibrant marigold garlands, fairy-light canopies, and brass diyas/urlis instead of expensive exotic imported flowers.
+4. **Photography (10% ~ ₹50,000)**: Hire an enthusiastic boutique candid photographer for 6 hours with digital raw + edited reel highlights.
+5. **Invitations & Gifts (5% ~ ₹25,000)**: Eco-friendly custom WhatsApp video invites + locally sourced artisanal sweets in jute hampers.`;
+      } else if (lower.includes('birthday') || lower.includes('year') || lower.includes('kid') || lower.includes('child') || lower.includes('10-year')) {
+        reply = `### Creative Themes & Ideas for a 10-Year-Old Birthday Celebration:
+
+1. **Space Odyssey & Cosmic Glow Party**:
+   • **Vibe**: Darkened room with UV blacklights, neon glow bracelets, and planetary balloons.
+   • **Activities**: Glow-in-the-dark face painting, 'Laser Maze' yarn obstacle course, and space trivia.
+   • **Signature Mocktail**: 'Galactic Fizz' (Lemon-lime soda with blue curaçao syrup and edible star glitter).
+2. **Carnival Extravaganza**:
+   • Mini popcorn and cotton candy machine stalls.
+   • Ring-toss, balloon darts, and bowling alley game booths where kids collect tokens for prizes.
+3. **Interactive Activities for Kids & Tweens**:
+   • DIY Cupcake or Waffle Decorating station with colorful sprinkles, chocolate dips, and fruit pearls.
+   • High-energy musical games with mini dance-offs hosted by the emcee.
+4. **Budget Tip**: Skip single-use plastic goodie bags; gift custom sketchbooks, succulent pots, or board games that kids actually keep!`;
+      } else if (lower.includes('community') || lower.includes('100') || lower.includes('attendees')) {
+        reply = `### Engaging Activities for a Community Event with 100 Attendees:
+
+1. **Inter-Neighborhood Cultural Showcase & Talent Hour**:
+   • 45-minute open talent segment with musical performances, poetry, and stand-up comedy.
+2. **Interactive Community Wall**:
+   • A large chalkboard or wooden board titled: *"What I Love Most About Our Community"* where guests pin handwritten notes and polaroid selfies.
+3. **Mega Tambola / Housie with Festive Twists**:
+   • Universal favorite that engages both elders and kids with fun, themed prizes (e.g., local bakery hampers).
+4. **Live Street Food Festival Setup**:
+   • 3-4 interactive live food stalls (Pani Puri challenge, Dosa counter, Kulfi sticks).
+5. **Eco-Friendly Community Drive**:
+   • A ceremonial sapling-planting or book-swap kiosk where neighbors bring one pre-loved book and take a new one home.`;
+      } else if (lower.includes('last-minute') || lower.includes('checklist') || lower.includes('preparation')) {
+        reply = `### Ultimate 48-Hour Last-Minute Event Checklist:
+
+• **T-48 Hours (2 Days Prior)**:
+  - Call venue manager to re-confirm opening time, air-conditioning test, and power backup generator.
+  - Finalize guaranteed guest headcount with caterer (hold a 10% plate buffer).
+  - Confirm arrival time and parking/valet instructions with DJ and photographer.
+• **T-24 Hours (Day Prior)**:
+  - Assemble all guest return gift hampers, welcome badges, and pooja/ritual items.
+  - Pack an 'Emergency Celebration Kit': safety pins, stain remover pen, mints, phone chargers, pain relievers, and scissors.
+  - Assign one trusted family member or friend as the designated 'Vendor Coordinator' with all contact numbers.
+• **Event Morning (T-4 Hours)**:
+  - Walk through decor setup to verify stage backdrop stability and sound volume test.
+  - Test wireless microphones and inspect restroom cleanliness with venue staff.
+  - Relax, get dressed on time, and welcome your guests with a smile!`;
+      } else if (lower.includes('menu') || lower.includes('food') || lower.includes('vegetarian')) {
+        reply = `### Curated Vegetarian Feast (150-200 Guests):
+
+• **Welcome Coolers**: Fresh Aam Panna with mint sprig & Spiced Cranberry Mojito.
+• **Live Appetizer Stations**:
+  - Truffle Amritsari Paneer Tikka with mint chutney
+  - Crispy Lotus Stem Honey Chilli
+  - Dahi Puri & Palak Patta Chaat with pomegranate pearls
+• **Main Course**:
+  - Paneer Lababdar in rich tomato-cashew reduction
+  - Dal Makhani slow-cooked overnight with churned butter
+  - Dum Aloo Kashmiri & Subz Diwani Handi
+  - Awadhi Veg Dum Biryani with Burani Garlic Raita
+  - Assorted Tandoori Breads (Garlic Naan, Laccha Paratha, Missi Roti)
+• **Desserts**:
+  - Hot Angoori Gulab Jamun over chilled Kesar Rabri
+  - Live Jalebi counter with Malai Rabdi
+  - Paan & Gulkand Ice Cream shots`;
+      } else if (lower.includes('decor') || lower.includes('reduce') || lower.includes('cost')) {
+        reply = `### 5 Proven Ways to Cut Decoration Costs by 35%:
+
+1. **Rely on Ambient Lighting**: String lights, fairy-light tunnels, and amber LED uplights transform any venue at a fraction of floral costs.
+2. **Select Locally Sourced Florals**: Genda (marigolds), mogra, tuberose, and eucalyptus greens cost 70% less than imported hydrangeas and orchids while delivering a richer aroma.
+3. **Statement Backdrops**: Focus budget on ONE spectacular photo-op backdrop rather than scattering mediocre props across large halls.
+4. **Fabric Drapes**: Ceiling draping in ivory, soft peach, and sage gives an ethereal ball-room feel without structural costs.
+5. **Reusable Props**: Rent vintage brass lanterns, copper urlis, and rustic wooden crates.`;
+      }
+
+      res.json({ success: true, source: 'curated_engine', isDemoFallback: true, reply });
+      return;
+    } catch (err: any) {
+      console.error('Chat endpoint error:', err);
+      res.json({
+        success: true,
+        source: 'curated_engine',
+        isDemoFallback: true,
+        reply: `Here are curated recommendations from Celebra AI:
+
+• **Budget Focus**: Prioritize high-visibility touchpoints (welcoming entrance, stage lighting, signature food items).
+• **Guest Flow**: Keep formalities under 45 minutes before serving starters to keep energy vibrant.
+• **Personal Touch**: A custom signature drink or personalized welcome note creates an unforgettable impression without extra expense.`
+      });
+      return;
     }
+  }
 
     const lower = (message || '').toLowerCase();
     let reply = `Here are curated recommendations from Celebra AI:
