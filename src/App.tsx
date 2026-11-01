@@ -29,7 +29,7 @@ export default function App() {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [aiStatus, setAiStatus] = useState<{ featherlessAvailable: boolean; model: string }>({
     featherlessAvailable: false,
-    model: 'meta-llama/Meta-Llama-3.1-8B-Instruct'
+    model: 'MiniMaxAI/MiniMax-M3.1-Flash'
   });
 
   // Initialize data on mount

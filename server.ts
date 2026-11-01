@@ -26,7 +26,7 @@ if (apiKey && apiKey !== 'MY_FEATHERLESS_API_KEY' && apiKey.trim() !== '') {
     });
     // Verify once asynchronously on boot without throwing uncaught errors
     candidateClient.chat.completions.create({
-      model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+      model: 'MiniMaxAI/MiniMax-M3.1-Flash',
       messages: [{ role: 'user', content: 'Ping' }],
       max_tokens: 10
     }).then(() => {
@@ -48,7 +48,7 @@ if (apiKey && apiKey !== 'MY_FEATHERLESS_API_KEY' && apiKey.trim() !== '') {
 app.get('/api/status', (_req: Request, res: Response) => {
   res.json({
     featherlessAvailable: featherlessVerified,
-    model: featherlessVerified ? 'meta-llama/Meta-Llama-3.1-8B-Instruct' : 'curated-celebration-engine',
+    model: featherlessVerified ? 'MiniMaxAI/MiniMax-M3.1-Flash' : 'curated-celebration-engine',
     mode: featherlessVerified ? 'Live Featherless AI' : 'Curated Celebration Engine (Demo Mode)',
     timestamp: new Date().toISOString()
   });
@@ -201,7 +201,7 @@ Output ONLY a valid JSON object with the exact following schema (no preamble, no
 Make sure the estimated amounts in costBreakdown sum exactly to approximately ₹${budgetNum}. Return strictly valid JSON.`;
 
       const response = await aiClient.chat.completions.create({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        model: 'MiniMaxAI/MiniMax-M3.1-Flash',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 4000
@@ -290,7 +290,7 @@ Return ONLY valid JSON matching this schema:
 }`;
 
       const response = await aiClient.chat.completions.create({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        model: 'MiniMaxAI/MiniMax-M3.1-Flash',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 2000
@@ -373,7 +373,7 @@ User question: "${message}"
 Answer clearly, formatted with concise bullet points, bold accents, and an encouraging tone. Keep the answer structured and easy to read.`;
 
       const response = await aiClient.chat.completions.create({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        model: 'MiniMaxAI/MiniMax-M3.1-Flash',
         messages: [{ role: 'user', content: chatPrompt }],
         temperature: 0.7,
         max_tokens: 1000
@@ -422,7 +422,7 @@ Return ONLY a JSON array of objects:
 ]`;
 
       const response = await aiClient.chat.completions.create({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        model: 'MiniMaxAI/MiniMax-M3.1-Flash',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 2000
