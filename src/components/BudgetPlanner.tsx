@@ -179,7 +179,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
     }
   };
 
-  // Gemini AI Budget Optimization Trigger
+  // Featherless AI Budget Optimization Trigger
   const handleOptimizeBudget = async () => {
     setIsOptimizing(true);
     try {
@@ -309,13 +309,13 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
             <Sparkles className="w-4 h-4 text-purple-700" />
             <h4 className="font-serif text-base font-bold text-stone-900">
               {isOverBudget
-                ? `Cost Overrun Detected: Save ₹${overAmount.toLocaleString('en-IN')} with Gemini`
+                ? `Cost Overrun Detected: Save ₹${overAmount.toLocaleString('en-IN')} with Featherless AI`
                 : 'Celebra AI Smart Budget Optimization'}
             </h4>
           </div>
           <p className="text-xs text-stone-600 max-w-2xl font-normal">
             {isOverBudget
-              ? 'Your estimated cost exceeds the designated target. Ask Gemini AI to pinpoint redundant items and deliver practical cost-saving alternatives without compromising guest delight.'
+              ? 'Your estimated cost exceeds the designated target. Ask Featherless AI to pinpoint redundant items and deliver practical cost-saving alternatives without compromising guest delight.'
               : 'Audit your current expenses against industry benchmark averages to find potential savings and negotiate vendor quotes.'}
           </p>
         </div>
@@ -346,7 +346,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-600 animate-pulse" />
               <h3 className="font-serif text-lg font-bold text-stone-900">
-                Gemini AI Cost Reduction Blueprint
+                Featherless AI Cost Reduction Blueprint
               </h3>
             </div>
             <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">

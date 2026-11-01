@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 
 dotenv.config();
 
@@ -14,38 +14,42 @@ const port = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json({ limit: '10mb' }));
 
-const apiKey = process.env.GEMINI_API_KEY;
-let aiClient: GoogleGenAI | null = null;
-let geminiVerified = false;
+const apiKey = process.env.FEATHERLESS_API_KEY;
+let aiClient: OpenAI | null = null;
+let featherlessVerified = false;
 
-if (apiKey && apiKey !== 'MY_GEMINI_API_KEY' && apiKey.trim() !== '') {
+if (apiKey && apiKey !== 'MY_FEATHERLESS_API_KEY' && apiKey.trim() !== '') {
   try {
-    const candidateClient = new GoogleGenAI({ apiKey });
+    const candidateClient = new OpenAI({
+      apiKey: apiKey,
+      baseURL: 'https://api.featherless.ai/v1'
+    });
     // Verify once asynchronously on boot without throwing uncaught errors
-    candidateClient.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: 'Ping'
+    candidateClient.chat.completions.create({
+      model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+      messages: [{ role: 'user', content: 'Ping' }],
+      max_tokens: 10
     }).then(() => {
       aiClient = candidateClient;
-      geminiVerified = true;
-      console.log('Gemini 3.8 Flash API verified and active.');
+      featherlessVerified = true;
+      console.log('Featherless API verified and active.');
     }).catch((_err) => {
       aiClient = null;
-      geminiVerified = false;
-      console.log('Gemini API project requires billing or free tier is unavailable. Activated Curated Celebration Engine (Demo Mode).');
+      featherlessVerified = false;
+      console.log('Featherless API key is invalid or quota exceeded. Activated Curated Celebration Engine (Demo Mode).');
     });
   } catch (err) {
     aiClient = null;
-    geminiVerified = false;
+    featherlessVerified = false;
   }
 }
 
 // Status endpoint
 app.get('/api/status', (_req: Request, res: Response) => {
   res.json({
-    geminiAvailable: geminiVerified,
-    model: geminiVerified ? 'gemini-3.8-flash' : 'curated-celebration-engine',
-    mode: geminiVerified ? 'Live Gemini AI' : 'Curated Celebration Engine (Demo Mode)',
+    featherlessAvailable: featherlessVerified,
+    model: featherlessVerified ? 'meta-llama/Meta-Llama-3.1-8B-Instruct' : 'curated-celebration-engine',
+    mode: featherlessVerified ? 'Live Featherless AI' : 'Curated Celebration Engine (Demo Mode)',
     timestamp: new Date().toISOString()
   });
 });
@@ -98,7 +102,7 @@ app.post('/api/ai/plan', async (req: Request, res: Response) => {
   const budgetNum = Number(budget) || 200000;
   const guestsNum = Number(guestCount) || 50;
 
-  if (aiClient && geminiVerified) {
+  if (aiClient && featherlessVerified) {
     try {
       const prompt = `You are Celebra AI, a world-class luxury celebration and event planning expert.
 Create a comprehensive, highly personalized, and culturally nuanced event plan for:
@@ -196,24 +200,23 @@ Output ONLY a valid JSON object with the exact following schema (no preamble, no
 }
 Make sure the estimated amounts in costBreakdown sum exactly to approximately ₹${budgetNum}. Return strictly valid JSON.`;
 
-      const response = await aiClient.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
+      const response = await aiClient.chat.completions.create({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 4000
       });
 
-      const responseText = response.text || '';
+      const responseText = response.choices[0]?.message?.content || '';
       const planData = extractJSON(responseText);
-      return res.json({ success: true, source: 'gemini', plan: planData });
+      return res.json({ success: true, source: 'featherless', plan: planData });
     } catch (err: any) {
-      console.error('Gemini plan generation error:', err);
+      console.error('Featherless plan generation error:', err);
       // Fallback to intelligent local template generator
     }
   }
 
-  // Graceful realistic fallback if Gemini key is missing or quota is exceeded
+  // Graceful realistic fallback if Featherless key is missing or quota is exceeded
   const fallbackPlan = generateFallbackPlan({
     eventType,
     name,
@@ -244,7 +247,7 @@ app.post('/api/ai/optimize-budget', async (req: Request, res: Response) => {
   const estimatedNum = Number(estimatedCost) || 120000;
   const overrun = Math.max(0, estimatedNum - budgetNum);
 
-  if (aiClient && geminiVerified) {
+  if (aiClient && featherlessVerified) {
     try {
       const prompt = `You are Celebra AI's financial event strategist.
 Event: "${eventName || 'Celebration'}"
@@ -286,19 +289,18 @@ Return ONLY valid JSON matching this schema:
   "contingencyAdvice": "Practical safety buffer tip"
 }`;
 
-      const response = await aiClient.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
+      const response = await aiClient.chat.completions.create({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 2000
       });
 
-      const responseText = response.text || '';
+      const responseText = response.choices[0]?.message?.content || '';
       const optimization = extractJSON(responseText);
-      return res.json({ success: true, source: 'gemini', optimization });
+      return res.json({ success: true, source: 'featherless', optimization });
     } catch (err: any) {
-      console.error('Gemini budget optimization error:', err);
+      console.error('Featherless budget optimization error:', err);
     }
   }
 
@@ -340,7 +342,7 @@ Return ONLY valid JSON matching this schema:
 app.post('/api/ai/chat', async (req: Request, res: Response) => {
   const { message, eventContext, history } = req.body;
 
-  if (aiClient && geminiVerified) {
+  if (aiClient && featherlessVerified) {
     try {
       const contextSummary = eventContext ? `
 Current Event Active Context:
@@ -362,18 +364,20 @@ User question: "${message}"
 
 Answer clearly, formatted with concise bullet points, bold accents, and an encouraging tone. Keep the answer structured and easy to read.`;
 
-      const response = await aiClient.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: chatPrompt
+      const response = await aiClient.chat.completions.create({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [{ role: 'user', content: chatPrompt }],
+        temperature: 0.7,
+        max_tokens: 1000
       });
 
       return res.json({
         success: true,
-        source: 'gemini',
-        reply: response.text || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
+        source: 'featherless',
+        reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
       });
     } catch (err: any) {
-      console.log('Gemini chat error handled gracefully, returning curated response.');
+      console.log('Featherless chat error handled gracefully, returning curated response.');
     }
   }
 
@@ -470,7 +474,7 @@ Answer clearly, formatted with concise bullet points, bold accents, and an encou
 app.post('/api/ai/ideas', async (req: Request, res: Response) => {
   const { category, eventContext } = req.body;
 
-  if (aiClient && geminiVerified) {
+  if (aiClient && featherlessVerified) {
     try {
       const prompt = `You are Celebra AI's Creative Director.
 Generate 4-5 distinctive, imaginative, and practical ideas for category: "${category}"
@@ -493,18 +497,17 @@ Return ONLY a JSON array of objects:
   }
 ]`;
 
-      const response = await aiClient.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
+      const response = await aiClient.chat.completions.create({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 2000
       });
 
-      const ideas = extractJSON(response.text || '[]');
-      return res.json({ success: true, source: 'gemini', ideas });
+      const ideas = extractJSON(response.choices[0]?.message?.content || '[]');
+      return res.json({ success: true, source: 'featherless', ideas });
     } catch (err: any) {
-      console.error('Gemini ideas error:', err);
+      console.error('Featherless ideas error:', err);
     }
   }
 

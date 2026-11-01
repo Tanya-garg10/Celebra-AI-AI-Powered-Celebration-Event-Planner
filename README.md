@@ -1,98 +1,69 @@
-# Celebra AI – AI-Powered Celebration & Event Planner
+# Celebra AI - Event Planning Assistant
 
-**Tagline:** Your Celebration, Perfectly Planned.
+An AI-powered celebration and event planning assistant using Featherless API.
 
-Celebra AI is an intelligent, modern SaaS event planning application designed to transform abstract celebration ideas into complete, personalized, and actionable event masterplans. Built for organizing weddings, milestone birthdays, anniversaries, college fests, cultural celebrations, and community galas.
+## Deployment Instructions (Vercel)
 
----
+### Prerequisites
+- Node.js installed
+- Vercel account
+- Featherless API key
 
-## 🌟 Key Features
-
-1. **AI Master Event Planner (Google Gemini 3.8 Flash)**:
-   - Overarching celebration concept, custom poetic tagline, and aesthetic vibe.
-   - Curated color palettes with hex swatches and material guidelines.
-   - Zonal decoration recommendations (Entrance, Stage, Dining, Photo Booth, Lighting).
-   - Tailored catering menus (welcome drinks, pass-around starters, signature mains, desserts, dietary flags).
-   - Day-of hourly run-of-show schedule.
-   - Phased preparation milestone timelines.
-
-2. **Smart Budget Planner & AI Cost Optimization**:
-   - Comprehensive budget dashboard tracking Available Budget, Estimated Commitments, Actual Expenses, and Remaining Balance.
-   - Category-wise spending visual charts (Recharts Donut distribution and Bar chart comparison).
-   - Expense CRUD: Add, edit, delete, categorize (Venue, Catering, Decor, Photography, Entertainment, Invitations, Transportation, Misc), and track payment status (Paid, Partial, Pending).
-   - **Gemini AI Budget Optimizer**: When costs exceed or approach the ceiling, AI identifies redundant items and suggests practical cost-saving alternatives without compromising guest delight.
-
-3. **Smart Timeline & Task Manager**:
-   - Phased event milestones with deadlines and priority badges (High, Medium, Low).
-   - Automatic overdue task detection.
-   - Progress bar tracking % of milestones executed.
-   - Interactive task checklist with filters.
-
-4. **Vendor Hub & Comparison Matrix**:
-   - Dedicated management for Venues, Caterers, Decorators, Photographers, Entertainment, Makeup, and Logistics.
-   - Booking status tracking: Shortlisted, Contacted, Booked, Completed.
-   - Side-by-side vendor comparison matrix.
-   - Transparent disclosure of sample demo records.
-
-5. **Guest & RSVP Management**:
-   - Track Confirmed, Pending, and Declined RSVPs.
-   - Headcount calculation with plus-ones / family counts.
-   - Dietary requirement breakdown: Vegetarian, Non-vegetarian, Jain (no root veg), Vegan, Kids.
-   - Search, filter, and 1-click CSV export.
-
-6. **Personalized Idea & Inspiration Generator**:
-   - On-demand AI brainstorm across Themes, Decor & Lighting, Invitations Copy, Menu & Cocktails, Entertainment & Games, Return Gifts, and Host Surprises.
-   - Budget ratings (Low, Medium, Luxury), "Why Guests Love It", and execution tips.
-
-7. **24/7 Context-Aware Celebration Assistant Chatbot**:
-   - Powered by Gemini 3.8 Flash.
-   - Aware of the currently active celebration (name, city, guest count, budget, food style).
-   - Quick suggested prompts and copyable responses.
-
----
-
-## 🚀 Technical Stack
-
-- **Frontend**: React 19, TypeScript, Tailwind CSS v4, Lucide Icons, Recharts, Canvas Confetti.
-- **Backend**: Node.js, Express, Vite middleware integration, Google Gemini API via `@google/genai`.
-- **Persistence**: LocalStorage with automatic backup, export, and import support.
-
----
-
-## 🛠️ Environment Variables
-
-Create a `.env` file or configure via AI Studio Secrets:
-
+### Step 1: Install Dependencies
 ```bash
-# Required for real-time Gemini AI plan generation and chat
-GEMINI_API_KEY="your-gemini-api-key"
-
-# Port (defaults to 3000)
-PORT=3000
+npm install
 ```
 
-*Note: If `GEMINI_API_KEY` is not provided or quota is exceeded, Celebra AI automatically falls back to an intelligent curated celebration engine with realistic templates, ensuring the application remains 100% usable without crashing.*
+### Step 2: Set Environment Variables
+Create a `.env` file (or set in Vercel dashboard):
+```
+FEATHERLESS_API_KEY=your_featherless_api_key_here
+```
 
----
+### Step 3: Deploy to Vercel
 
-## 💻 Local Development & Installation
+**Option A: Using Vercel CLI**
+```bash
+npm install -g vercel
+vercel login
+vercel
+```
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+**Option B: Using Vercel Dashboard**
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com)
+3. Click "Add New Project"
+4. Import your GitHub repository
+5. Set environment variable: `FEATHERLESS_API_KEY`
+6. Click "Deploy"
 
-2. Start fullstack development server (Express + Vite on port 3000):
-   ```bash
-   npm run dev
-   ```
+### Step 4: Configure Environment Variables in Vercel
+After deployment:
+1. Go to your project settings in Vercel
+2. Navigate to Environment Variables
+3. Add: `FEATHERLESS_API_KEY` = your actual Featherless API key
+4. Redeploy if needed
 
-3. Build for production:
-   ```bash
-   npm run build
-   ```
+### Local Development
+```bash
+npm run dev
+```
+Visit `http://localhost:3000`
 
-4. Start production server:
-   ```bash
-   npm start
-   ```
+### Build for Production
+```bash
+npm run build
+```
+
+## Project Structure
+- `api/index.ts` - Vercel serverless functions for API endpoints
+- `server.ts` - Local Express server (for development)
+- `src/` - React frontend application
+- `vercel.json` - Vercel deployment configuration
+
+## API Endpoints
+- `GET /api/status` - Check Featherless API status
+- `POST /api/ai/plan` - Generate event plan
+- `POST /api/ai/optimize-budget` - Optimize event budget
+- `POST /api/ai/chat` - AI chat assistant
+- `POST /api/ai/ideas` - Generate creative ideas

@@ -118,7 +118,7 @@ export const EventOverview: React.FC<EventOverviewProps> = ({
   };
 
   const handleRegenerate = async () => {
-    if (!window.confirm('Regenerate the entire AI plan using Gemini 3.8 Flash?')) return;
+    if (!window.confirm('Regenerate the entire AI plan using Featherless AI?')) return;
     setIsRegenerating(true);
     try {
       const response = await generateEventPlanAPI({
@@ -178,7 +178,7 @@ Generated with Celebra AI.`;
           No AI Plan Generated Yet
         </h3>
         <p className="text-xs text-stone-600 mt-2 max-w-md mx-auto">
-          Generate an end-to-end celebration concept, timeline, catering menu, and decor palette powered by Google Gemini.
+          Generate an end-to-end celebration concept, timeline, catering menu, and decor palette powered by Featherless AI.
         </p>
         <button
           onClick={handleRegenerate}
@@ -299,7 +299,7 @@ Generated with Celebra AI.`;
               ) : (
                 <RefreshCw className="w-3.5 h-3.5" />
               )}
-              <span>Regenerate with Gemini</span>
+              <span>Regenerate with Featherless AI</span>
             </button>
           </div>
         </div>

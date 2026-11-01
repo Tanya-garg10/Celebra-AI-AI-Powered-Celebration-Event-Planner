@@ -605,7 +605,7 @@ export const EventWizard: React.FC<EventWizardProps> = ({
                   </h4>
                 </div>
                 <p className="text-xs text-stone-700 leading-relaxed font-normal">
-                  Celebra AI will analyze your ₹{budget.toLocaleString('en-IN')} budget, {guestCount} guest scale, and aesthetic preferences using Google Gemini to construct an end-to-end plan, category budget breakdown, day-of schedule, and milestone checklist.
+                  Celebra AI will analyze your ₹{budget.toLocaleString('en-IN')} budget, {guestCount} guest scale, and aesthetic preferences using Featherless AI to construct an end-to-end plan, category budget breakdown, day-of schedule, and milestone checklist.
                 </p>
               </div>
 
@@ -688,12 +688,12 @@ export const EventWizard: React.FC<EventWizardProps> = ({
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span>Generating Celebration Masterplan with Gemini...</span>
+                  <span>Generating Celebration Masterplan with Featherless AI...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 text-amber-200" />
-                  <span>Generate Event Plan with Gemini</span>
+                  <span>Generate Event Plan with Featherless AI</span>
                 </>
               )}
             </button>

@@ -84,7 +84,7 @@ export const IdeaGenerator: React.FC<IdeaGeneratorProps> = ({ event }) => {
             </h3>
           </div>
           <p className="text-xs text-stone-600 mt-1">
-            Gemini AI generates distinctive, budget-conscious ideas tuned specifically to {event.name} ({event.location}).
+            Featherless AI generates distinctive, budget-conscious ideas tuned specifically to {event.name} ({event.location}).
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export const IdeaGenerator: React.FC<IdeaGeneratorProps> = ({ event }) => {
         <div className="bg-white rounded-3xl p-12 text-center border border-stone-200/80 shadow-xs space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto" />
           <p className="text-xs font-bold text-stone-800">
-            Brainstorming creative celebration concepts with Gemini...
+            Brainstorming creative celebration concepts with Featherless AI...
           </p>
           <p className="text-[11px] text-stone-500">
             Tailoring for ₹{event.budget.toLocaleString('en-IN')} budget & {event.guestCount} guests

@@ -25,7 +25,7 @@ interface NavbarProps {
   onResetDemo: () => void;
   onExportData: () => void;
   onImportData: (jsonStr: string) => void;
-  geminiStatus: { geminiAvailable: boolean; model: string };
+  aiStatus: { featherlessAvailable: boolean; model: string };
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onResetDemo,
   onExportData,
   onImportData,
-  geminiStatus,
+  aiStatus,
 }) => {
   const [isEventMenuOpen, setIsEventMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -113,14 +113,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100 border border-stone-200/80 text-[10px] font-semibold text-stone-600">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  geminiStatus.geminiAvailable
+                  aiStatus.featherlessAvailable
                     ? 'bg-emerald-500 animate-pulse'
                     : 'bg-amber-500'
                 }`}
               />
               <span>
-                {geminiStatus.geminiAvailable
-                  ? 'Gemini 3.8 Flash'
+                {aiStatus.featherlessAvailable
+                  ? 'Featherless AI'
                   : 'Curated Demo Engine'}
               </span>
             </div>
@@ -268,19 +268,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <div className="flex items-center gap-1.5">
                         <span
                           className={`w-2 h-2 rounded-full ${
-                            geminiStatus.geminiAvailable
+                            aiStatus.featherlessAvailable
                               ? 'bg-emerald-500 animate-pulse'
                               : 'bg-amber-500'
                           }`}
                         />
                         <span className="font-semibold text-stone-800">
-                          {geminiStatus.geminiAvailable
-                            ? 'Gemini 3.8 Flash'
+                          {aiStatus.featherlessAvailable
+                            ? 'Featherless AI'
                             : 'Curated Engine Mode'}
                         </span>
                       </div>
                       <p className="text-[10px] text-stone-500 mt-0.5">
-                        {geminiStatus.geminiAvailable
+                        {aiStatus.featherlessAvailable
                           ? 'Real-time AI active via server proxy'
                           : 'Realistic curated templates enabled'}
                       </p>

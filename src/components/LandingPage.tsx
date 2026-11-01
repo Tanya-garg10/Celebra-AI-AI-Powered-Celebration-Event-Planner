@@ -100,7 +100,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       icon: PieChart,
       title: 'Smart Budget Optimizer',
       description:
-        'Category-wise allocation charts for Venue, Catering, Decor and more. Gemini identifies overruns and provides actionable, high-impact savings.'
+        'Category-wise allocation charts for Venue, Catering, Decor and more. Featherless AI identifies overruns and provides actionable, high-impact savings.'
     },
     {
       icon: Clock,
@@ -136,7 +136,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       num: '02',
-      title: 'Gemini AI Crafts Your Blueprint',
+      title: 'Featherless AI Crafts Your Blueprint',
       desc: 'Within seconds, Celebra AI generates personalized decor palettes, realistic budget distribution, day-of schedules, and curated menus.'
     },
     {
@@ -490,7 +490,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     Saves Up To 25% on Avoidable Expenses
                   </h4>
                   <p className="text-xs text-stone-600 mt-0.5">
-                    Gemini AI detects unnecessary decor rentals and excessive food plate buffers, suggesting smart swaps that protect your pocket without compromising elegance.
+                    Featherless AI detects unnecessary decor rentals and excessive food plate buffers, suggesting smart swaps that protect your pocket without compromising elegance.
                   </p>
                 </div>
               </div>
@@ -686,7 +686,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="pt-6 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-500 gap-3">
-            <p>© {new Date().getFullYear()} Celebra AI. All rights reserved. Powered by Google Gemini.</p>
+            <p>© {new Date().getFullYear()} Celebra AI. All rights reserved. Powered by Featherless AI.</p>
             <p>Demo & Evaluation Edition with Offline Client Resilience.</p>
           </div>
         </div>

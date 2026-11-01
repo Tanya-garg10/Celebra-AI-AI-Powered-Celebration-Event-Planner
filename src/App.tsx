@@ -27,9 +27,9 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'dashboard'>('landing');
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const [geminiStatus, setGeminiStatus] = useState<{ geminiAvailable: boolean; model: string }>({
-    geminiAvailable: false,
-    model: 'gemini-3.8-flash'
+  const [aiStatus, setAiStatus] = useState<{ featherlessAvailable: boolean; model: string }>({
+    featherlessAvailable: false,
+    model: 'meta-llama/Meta-Llama-3.1-8B-Instruct'
   });
 
   // Initialize data on mount
@@ -45,7 +45,7 @@ export default function App() {
     }
 
     checkServerStatus().then((status) => {
-      setGeminiStatus(status);
+      setAiStatus(status);
     });
   }, []);
 
@@ -116,7 +116,7 @@ export default function App() {
         onResetDemo={handleResetDemo}
         onExportData={handleExportData}
         onImportData={handleImportData}
-        geminiStatus={geminiStatus}
+        aiStatus={aiStatus}
       />
 
       {/* Main Views */}

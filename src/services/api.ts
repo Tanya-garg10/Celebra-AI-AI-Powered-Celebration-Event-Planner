@@ -15,19 +15,19 @@ export interface PlanGenerationRequest {
   priorities: string[];
 }
 
-export async function checkServerStatus(): Promise<{ geminiAvailable: boolean; model: string }> {
+export async function checkServerStatus(): Promise<{ featherlessAvailable: boolean; model: string }> {
   try {
     const res = await fetch('/api/status');
     if (!res.ok) throw new Error('Failed to fetch status');
     return await res.json();
   } catch (err) {
-    return { geminiAvailable: false, model: 'demo-curated' };
+    return { featherlessAvailable: false, model: 'demo-curated' };
   }
 }
 
 export async function generateEventPlanAPI(data: PlanGenerationRequest): Promise<{
   success: boolean;
-  source: 'gemini' | 'curated_engine';
+  source: 'featherless' | 'curated_engine';
   isDemoFallback?: boolean;
   plan: AIPlan;
 }> {
@@ -52,7 +52,7 @@ export async function optimizeBudgetAPI(payload: {
   categories: any[];
 }): Promise<{
   success: boolean;
-  source: 'gemini' | 'curated_engine';
+  source: 'featherless' | 'curated_engine';
   isDemoFallback?: boolean;
   optimization: BudgetOptimizationSuggestion;
 }> {
@@ -75,7 +75,7 @@ export async function sendChatMessageAPI(payload: {
   history?: any[];
 }): Promise<{
   success: boolean;
-  source: 'gemini' | 'curated_engine';
+  source: 'featherless' | 'curated_engine';
   isDemoFallback?: boolean;
   reply: string;
 }> {
@@ -97,7 +97,7 @@ export async function generateIdeasAPI(payload: {
   eventContext: any;
 }): Promise<{
   success: boolean;
-  source: 'gemini' | 'curated_engine';
+  source: 'featherless' | 'curated_engine';
   isDemoFallback?: boolean;
   ideas: GeneratedIdea[];
 }> {

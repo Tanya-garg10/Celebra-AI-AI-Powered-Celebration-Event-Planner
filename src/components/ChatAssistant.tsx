@@ -102,7 +102,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
         role: 'assistant',
         content: response.reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isAiSource: response.source === 'gemini'
+        isAiSource: response.source === 'featherless'
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
@@ -219,7 +219,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   <div className="mt-2.5 pt-2 border-t border-stone-200/60 flex items-center justify-between text-[10px] text-stone-500 font-medium">
                     <span className="flex items-center gap-1">
                       <span className={`w-1.5 h-1.5 rounded-full ${msg.isAiSource ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                      <span>{msg.isAiSource ? 'Gemini 3.8 Flash' : 'Curated Celebration Engine (Demo Mode)'}</span>
+                      <span>{msg.isAiSource ? 'Featherless AI' : 'Curated Celebration Engine (Demo Mode)'}</span>
                     </span>
                   </div>
                 )}
@@ -286,7 +286,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </button>
         </form>
         <p className="text-[10px] text-stone-400 text-center mt-2">
-          Powered by Google Gemini 3.8 Flash • Contextually aware
+          Powered by Featherless AI • Contextually aware
         </p>
       </div>
     </div>

@@ -2,5 +2,5 @@
   "name": "Celebra AI",
   "description": "AI-Powered Celebration & Event Planner. Transform simple event ideas into complete, personalized, and actionable event plans with smart budgeting, timelines, vendor and guest management.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_OPENAI_COMPATIBLE_API"]
 }
