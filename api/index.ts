@@ -9,29 +9,27 @@ function initFeatherless() {
   if (aiClient) return;
 
   const apiKey = process.env.FEATHERLESS_API_KEY;
+  console.log('FEATHERLESS_API_KEY exists:', !!apiKey);
+  console.log('FEATHERLESS_API_KEY value:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
+
   if (apiKey && apiKey !== 'MY_FEATHERLESS_API_KEY' && apiKey.trim() !== '') {
     try {
       const candidateClient = new OpenAI({
         apiKey: apiKey,
         baseURL: 'https://api.featherless.ai/v1'
       });
-      candidateClient.chat.completions.create({
-        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
-        messages: [{ role: 'user', content: 'Ping' }],
-        max_tokens: 10
-      }).then(() => {
-        aiClient = candidateClient;
-        featherlessVerified = true;
-        console.log('Featherless API verified and active.');
-      }).catch((_err) => {
-        aiClient = null;
-        featherlessVerified = false;
-        console.log('Featherless API key is invalid or quota exceeded. Activated Curated Celebration Engine (Demo Mode).');
-      });
+      aiClient = candidateClient;
+      featherlessVerified = true;
+      console.log('Featherless API initialized (skipping verification in serverless).');
     } catch (err) {
+      console.error('Featherless init error:', err);
       aiClient = null;
       featherlessVerified = false;
     }
+  } else {
+    console.log('No valid FEATHERLESS_API_KEY found, using demo mode.');
+    aiClient = null;
+    featherlessVerified = false;
   }
 }
 
@@ -63,26 +61,27 @@ function extractJSON(text: string): any {
 
 // Status endpoint
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  initFeatherless();
+  try {
+    initFeatherless();
 
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
+    }
 
-  const { url } = req;
+    const url = req.url || '';
 
   // Route handling
-  if (url === '/api/status' && req.method === 'GET') {
+  if (url.includes('/api/status') && req.method === 'GET') {
     res.json({
       featherlessAvailable: featherlessVerified,
       model: featherlessVerified ? 'meta-llama/Meta-Llama-3.1-8B-Instruct' : 'curated-celebration-engine',
@@ -92,7 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  if (url === '/api/ai/plan' && req.method === 'POST') {
+  if (url.includes('/api/ai/plan') && req.method === 'POST') {
     const {
       eventType,
       name,
@@ -249,7 +248,7 @@ Make sure the estimated amounts in costBreakdown sum exactly to approximately â‚
     return;
   }
 
-  if (url === '/api/ai/optimize-budget' && req.method === 'POST') {
+  if (url.includes('/api/ai/optimize-budget') && req.method === 'POST') {
     const { eventName, budget, estimatedCost, actualSpent, categories } = req.body;
     const budgetNum = Number(budget) || 100000;
     const estimatedNum = Number(estimatedCost) || 120000;
@@ -346,7 +345,7 @@ Return ONLY valid JSON matching this schema:
     return;
   }
 
-  if (url === '/api/ai/chat' && req.method === 'POST') {
+  if (url.includes('/api/ai/chat') && req.method === 'POST') {
     const { message, eventContext } = req.body;
 
     if (aiClient && featherlessVerified) {
@@ -384,7 +383,9 @@ Answer clearly, formatted with concise bullet points, bold accents, and an encou
           reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
         });
       } catch (err: any) {
-        console.log('Featherless chat error handled gracefully, returning curated response.');
+        console.error('Featherless chat error:', err);
+        console.error('Error details:', err.message);
+        // Fall through to demo mode
       }
     }
 
@@ -477,7 +478,7 @@ Answer clearly, formatted with concise bullet points, bold accents, and an encou
     return;
   }
 
-  if (url === '/api/ai/ideas' && req.method === 'POST') {
+  if (url.includes('/api/ai/ideas') && req.method === 'POST') {
     const { category, eventContext } = req.body;
 
     if (aiClient && featherlessVerified) {
@@ -678,6 +679,14 @@ Return ONLY a JSON array of objects:
   }
 
   res.status(404).json({ error: 'Not found' });
+  } catch (error: any) {
+    console.error('API Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message || 'An unexpected error occurred'
+    });
+  }
 }
 
 // Fallback plan generator
