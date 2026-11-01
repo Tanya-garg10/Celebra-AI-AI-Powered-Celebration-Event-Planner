@@ -220,6 +220,7 @@ Make sure the estimated amounts in costBreakdown sum exactly to approximately â‚
         return res.json({ success: true, source: 'featherless', plan: planData });
       } catch (err: any) {
         console.error('Featherless plan generation error:', err);
+        featherlessVerified = false;
       }
     }
 
@@ -308,6 +309,7 @@ Return ONLY valid JSON matching this schema:
         return res.json({ success: true, source: 'featherless', optimization });
       } catch (err: any) {
         console.error('Featherless budget optimization error:', err);
+        featherlessVerified = false;
       }
     }
 
@@ -386,6 +388,7 @@ Answer clearly, formatted with concise bullet points, bold accents, and an encou
         console.error('Featherless chat error:', err);
         console.error('Error details:', err.message);
         // Fall through to demo mode
+        featherlessVerified = false;
       }
     }
 
@@ -515,6 +518,7 @@ Return ONLY a JSON array of objects:
         return res.json({ success: true, source: 'featherless', ideas });
       } catch (err: any) {
         console.error('Featherless ideas error:', err);
+        featherlessVerified = false;
       }
     }
 
