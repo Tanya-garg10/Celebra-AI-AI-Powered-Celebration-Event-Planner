@@ -391,4 +391,5 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   isAiSource?: boolean;
+  isError?: boolean;
 }

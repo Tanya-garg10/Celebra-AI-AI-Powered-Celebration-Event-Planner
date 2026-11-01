@@ -75,9 +75,10 @@ export async function sendChatMessageAPI(payload: {
   history?: any[];
 }): Promise<{
   success: boolean;
-  source: 'featherless' | 'curated_engine';
+  source: 'featherless' | 'curated_engine' | 'error';
   isDemoFallback?: boolean;
-  reply: string;
+  reply?: string;
+  error?: string;
 }> {
   const res = await fetch('/api/ai/chat', {
     method: 'POST',
@@ -85,11 +86,17 @@ export async function sendChatMessageAPI(payload: {
     body: JSON.stringify(payload),
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error(`Chat assistant failed with HTTP status ${res.status}`);
+    return {
+      success: false,
+      source: 'error',
+      error: data.error || `Chat assistant failed with HTTP status ${res.status}`
+    };
   }
 
-  return await res.json();
+  return data;
 }
 
 export async function generateIdeasAPI(payload: {

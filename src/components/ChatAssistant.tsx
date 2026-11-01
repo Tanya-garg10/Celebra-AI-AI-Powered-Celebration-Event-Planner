@@ -97,6 +97,20 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
         history: messages.slice(-4)
       });
 
+      if (!response.success) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `asst-err-${Date.now()}`,
+            role: 'assistant',
+            content: response.error || 'Failed to generate response. Please try again.',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isError: true
+          }
+        ]);
+        return;
+      }
+
       const assistantMsg: ChatMessage = {
         id: `asst-${Date.now()}`,
         role: 'assistant',
@@ -113,7 +127,8 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           id: `asst-err-${Date.now()}`,
           role: 'assistant',
           content: 'I experienced a connection hiccup while analyzing your request. Please try again!',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isError: true
         }
       ]);
     } finally {
@@ -210,12 +225,14 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                 className={`max-w-[88%] p-3.5 rounded-2xl text-xs leading-relaxed group relative ${
                   isUser
                     ? 'bg-stone-900 text-white rounded-br-xs'
-                    : 'bg-[#FAF8F5] text-stone-800 border border-stone-200/80 rounded-bl-xs'
+                    : msg.isError
+                      ? 'bg-red-50 text-red-800 border border-red-200/80 rounded-bl-xs'
+                      : 'bg-[#FAF8F5] text-stone-800 border border-stone-200/80 rounded-bl-xs'
                 }`}
               >
                 <FormattedMarkdown content={msg.content} isUser={isUser} />
 
-                {!isUser && (
+                {!isUser && !msg.isError && (
                   <div className="mt-2.5 pt-2 border-t border-stone-200/60 flex items-center justify-between text-[10px] text-stone-500 font-medium">
                     <span className="flex items-center gap-1">
                       <span className={`w-1.5 h-1.5 rounded-full ${msg.isAiSource ? 'bg-emerald-500' : 'bg-amber-500'}`} />
@@ -286,7 +303,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </button>
         </form>
         <p className="text-[10px] text-stone-400 text-center mt-2">
-          Powered by Featherless AI • Contextually aware
+          Requires valid FEATHERLESS_API_KEY • Contextually aware
         </p>
       </div>
     </div>

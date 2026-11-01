@@ -274,9 +274,20 @@ Return ONLY valid JSON matching this schema:
   if (url.includes('/api/ai/chat') && req.method === 'POST') {
     const { message, eventContext } = req.body;
 
-    const aiClient = getFeatherlessClient();
+    // Require valid API key - no fallback to demo mode
+    let aiClient: OpenAI;
+    try {
+      aiClient = getFeatherlessClient();
+    } catch (err) {
+      return res.status(503).json({
+        success: false,
+        error: 'FEATHERLESS_API_KEY is not configured or invalid. Please set a valid API key to use the chat assistant.',
+        source: 'error'
+      });
+    }
 
-    const contextSummary = eventContext ? `
+    try {
+      const contextSummary = eventContext ? `
 Current Event Active Context:
 |- Name: ${eventContext.name || 'Celebration'}
 |- Type: ${eventContext.eventType || 'Event'}
@@ -287,7 +298,7 @@ Current Event Active Context:
 |- Food: ${eventContext.foodPreference || 'Both'}
 ` : 'No specific event active.';
 
-    const chatPrompt = `You are Celebra AI's Senior Celebration & Event Planner Assistant.
+      const chatPrompt = `You are Celebra AI's Senior Celebration & Event Planner Assistant.
 You give warm, highly practical, creative, and budget-conscious advice for organizing Indian and global celebrations (Weddings, Birthdays, Anniversaries, College Fests, Community Gatherings).
 Always provide actionable suggestions with specific cost estimates, menu items, or scheduling details where appropriate.
 ${contextSummary}
@@ -296,18 +307,26 @@ User question: "${message}"
 
 Answer clearly, formatted with concise bullet points, bold accents, and an encouraging tone. Keep the answer structured and easy to read.`;
 
-    const response = await aiClient.chat.completions.create({
-      model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
-      messages: [{ role: 'user', content: chatPrompt }],
-      temperature: 0.7,
-      max_tokens: 1000
-    });
+      const response = await aiClient.chat.completions.create({
+        model: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+        messages: [{ role: 'user', content: chatPrompt }],
+        temperature: 0.7,
+        max_tokens: 1000
+      });
 
-    return res.json({
-      success: true,
-      source: 'featherless',
-      reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
-    });
+      return res.json({
+        success: true,
+        source: 'featherless',
+        reply: response.choices[0]?.message?.content || "I'm delighted to help you make this celebration extraordinary! Could you share a few more specifics?"
+      });
+    } catch (err: any) {
+      console.error('Featherless chat error:', err);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to generate chat response. Please check your API key and try again.',
+        source: 'error'
+      });
+    }
   }
 
   // 4. Personalized Idea Generator
